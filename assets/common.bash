@@ -17,7 +17,13 @@ start_docker() {
   mkdir -p /var/lib/docker
   mount -t tmpfs -o size=10G none /var/lib/docker
 
-  docker -d >/dev/null 2>&1 &
+  if [ $(jq -r '.source | has("registry")') = "true" ]; then
+    local registry=$(jq -r '.source.registry' < $payload)
+
+    docker -d --insecure-registry $registry >/dev/null 2>&1 &
+  else
+    docker -d > /dev/null 2>&1 &
+  fi
 
   sleep 1
 
