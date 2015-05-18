@@ -24,6 +24,7 @@ cat > $payload <&0
 
 start_docker
 
+registry=$(jq -r '.source.registry // "registry.hub.docker.com"' < $payload)
 username=$(jq -r '.source.username // ""' < $payload)
 password=$(jq -r '.source.password // ""' < $payload)
 email=$(jq -r '.source.email // ""' < $payload)
@@ -33,6 +34,7 @@ if [ -n "${username}" ] && [ -n "${password}" ] && [ -n "${email}" ]; then
 fi
 
 repository="$(jq -r '.source.repository // ""' < $payload)"
+repository="${registry}/${repository}"
 tag="$(jq -r '.source.tag // "latest"' < $payload)"
 rootfs="$(jq -r '.params.rootfs // false' < $payload)"
 
